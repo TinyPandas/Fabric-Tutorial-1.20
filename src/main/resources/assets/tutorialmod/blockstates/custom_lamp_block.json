@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=true": { "model": "tutorialmod:block/custom_lamp_block_on"},
+    "lit=false": { "model": "tutorialmod:block/custom_lamp_block_off"}
+  }
+}

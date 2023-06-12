@@ -12,6 +12,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.panda.tutorialmod.ExampleMod;
+import net.panda.tutorialmod.block.custom.CustomLampBlock;
 import net.panda.tutorialmod.block.custom.VirusBlock;
 import net.panda.tutorialmod.item.ModItemGroup;
 
@@ -29,6 +30,10 @@ public class ModBlocks {
 
     public static final Block VIRUS_BLOCK = registerBlock("virus_block",
             new VirusBlock(FabricBlockSettings.create().strength(4.0f).requiresTool().dropsNothing()),
+            ModItemGroup.registryKey());
+
+    public static final Block CUSTOM_LAMP_BLOCK = registerBlock("custom_lamp_block",
+            new CustomLampBlock(),
             ModItemGroup.registryKey());
 
     private static Block registerBlock(String name, Block block, RegistryKey<ItemGroup> tab) {
