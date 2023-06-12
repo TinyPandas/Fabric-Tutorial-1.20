@@ -1,6 +1,7 @@
 {
   "item.tutorialmod.custom_item": "Custom Item",
   "item.tutorialmod.filled_custom_item": "Filled Custom Item",
+  "item.tutorialmod.custom_wand_item": "Custom Wand",
 
   "block.tutorialmod.custom_block": "Custom Block",
   "block.tutorialmod.filled_custom_block": "Filled Custom Block",
