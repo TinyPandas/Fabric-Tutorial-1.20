@@ -5,6 +5,7 @@ import net.fabricmc.api.ModInitializer;
 import net.panda.tutorialmod.block.ModBlocks;
 import net.panda.tutorialmod.item.ModItemGroup;
 import net.panda.tutorialmod.item.ModItems;
+import net.panda.tutorialmod.world.feature.ModConfiguredFeatures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,8 @@ public class ExampleMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModConfiguredFeatures.registerConfiguredFeatures();
+
 		ModItems.registerModItems();
 		ModBlocks.registerModBlocks();
 
