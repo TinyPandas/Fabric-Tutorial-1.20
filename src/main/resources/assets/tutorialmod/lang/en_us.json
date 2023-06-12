@@ -1,5 +1,9 @@
 {
   "item.tutorialmod.custom_item": "Custom Item",
   "item.tutorialmod.filled_custom_item": "Filled Custom Item",
+
+  "block.tutorialmod.custom_block": "Custom Block",
+  "block.tutorialmod.filled_custom_block": "Filled Custom Block",
+
   "itemGroup.tutorialmod.custom_group": "Custom Item Group"
 }
