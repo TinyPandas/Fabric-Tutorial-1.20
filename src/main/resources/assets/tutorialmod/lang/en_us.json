@@ -11,5 +11,8 @@
   "itemGroup.tutorialmod.custom_group": "Custom Item Group",
 
   "tooltip.tutorialmod.custom_wand_item": "This is a magical wand.",
-  "tooltip.tutorialmod.virus_block": "Ew, gross!"
+  "tooltip.tutorialmod.virus_block": "Ew, gross!",
+
+  "key.category.tutorialmod.custom": "Custom Keybinds",
+  "key.tutorialmod.custom": "Spawn Cow Key"
 }

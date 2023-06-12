@@ -1,10 +1,13 @@
 package net.panda.tutorialmod;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.panda.tutorialmod.event.KeyInputHandler;
+import net.panda.tutorialmod.networking.ModMessages;
 
 public class ExampleModClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+		KeyInputHandler.register();
+		ModMessages.registerS2CPackets();
 	}
 }
