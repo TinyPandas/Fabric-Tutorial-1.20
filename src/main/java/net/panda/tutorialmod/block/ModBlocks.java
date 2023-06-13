@@ -13,6 +13,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.panda.tutorialmod.ExampleMod;
 import net.panda.tutorialmod.block.custom.CustomLampBlock;
+import net.panda.tutorialmod.block.custom.FilledCustomBlock;
 import net.panda.tutorialmod.block.custom.VirusBlock;
 import net.panda.tutorialmod.item.ModItemGroup;
 
@@ -25,7 +26,7 @@ public class ModBlocks {
             ModItemGroup.registryKey());
 
     public static final Block FILLED_CUSTOM_BLOCK = registerBlock("filled_custom_block",
-            new Block(FabricBlockSettings.create().strength(4.0f).requiresTool()),
+            new FilledCustomBlock(FabricBlockSettings.create().strength(4.0f).requiresTool()),
             ModItemGroup.registryKey());
 
     public static final Block VIRUS_BLOCK = registerBlock("virus_block",
