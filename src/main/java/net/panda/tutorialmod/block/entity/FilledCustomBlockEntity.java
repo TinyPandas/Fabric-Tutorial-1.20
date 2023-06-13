@@ -16,9 +16,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.panda.tutorialmod.item.ModItems;
+import net.panda.tutorialmod.recipe.CustomRecipe;
 import net.panda.tutorialmod.screen.FilledCustomBlockScreenHandler;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
 
@@ -110,9 +112,16 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
             simpleInventory.setStack(i, entity.getStack(i));
         }
 
-        if (hasRecipe(entity)) {
+        Optional<CustomRecipe> recipe = entity.getWorld().getRecipeManager()
+                .getFirstMatch(CustomRecipe.Type.INSTANCE, simpleInventory, entity.getWorld());
+
+        if (hasRecipe(entity) && recipe.isPresent()) {
+            CustomRecipe recipeResult = recipe.get();
+            ItemStack recipeOutput = recipeResult.getOutput(entity.getWorld().getRegistryManager());
+            ItemStack newOutput = new ItemStack(recipeOutput.getItem(), entity.getStack(2).getCount() + recipeOutput.getCount());
+
             entity.removeStack(1, 1);
-            entity.setStack(2, new ItemStack(ModItems.FILLED_CUSTOM_ITEM, entity.getStack(2).getCount() + 1));
+            entity.setStack(2, newOutput);
             entity.resetProgress();
         }
     }
@@ -123,9 +132,11 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
             simpleInventory.setStack(i, entity.getStack(i));
         }
 
-        boolean hasCustomItemInFirstSlot = entity.getStack(1).getItem() == ModItems.CUSTOM_ITEM;
+        Optional<CustomRecipe> match = entity.getWorld().getRecipeManager()
+                .getFirstMatch(CustomRecipe.Type.INSTANCE, simpleInventory, entity.getWorld());
 
-        return hasCustomItemInFirstSlot && canInsertAmountIntoOutputSlot(simpleInventory) && canInsertItemIntoOutputSlot(simpleInventory, ModItems.FILLED_CUSTOM_ITEM);
+        return match.isPresent() && canInsertAmountIntoOutputSlot(simpleInventory) &&
+                canInsertItemIntoOutputSlot(simpleInventory, match.get().getOutput(entity.getWorld().getRegistryManager()).getItem());
     }
 
     private static boolean canInsertItemIntoOutputSlot(SimpleInventory simpleInventory, Item output) {

@@ -1,0 +1,11 @@
+{
+  "type": "tutorialmod:custom_recipe",
+  "ingredients": [
+    {
+      "item": "tutorialmod:custom_item"
+    }
+  ],
+  "output": {
+    "item": "tutorialmod:filled_custom_item"
+  }
+}

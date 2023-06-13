@@ -7,6 +7,7 @@ import net.panda.tutorialmod.block.entity.ModBlockEntities;
 import net.panda.tutorialmod.item.ModItemGroup;
 import net.panda.tutorialmod.item.ModItems;
 import net.panda.tutorialmod.networking.ModMessages;
+import net.panda.tutorialmod.recipe.ModRecipes;
 import net.panda.tutorialmod.screen.ModScreenHandlers;
 import net.panda.tutorialmod.world.feature.ModConfiguredFeatures;
 import org.slf4j.Logger;
@@ -28,5 +29,7 @@ public class ExampleMod implements ModInitializer {
 
 		ModBlockEntities.registerBlockEntities();
 		ModScreenHandlers.registerAllScreenHandlers();
+
+		ModRecipes.registerRecipes();
 	}
 }
