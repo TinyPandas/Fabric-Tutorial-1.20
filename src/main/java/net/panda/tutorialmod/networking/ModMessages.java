@@ -10,6 +10,7 @@ public class ModMessages {
 
     public static final Identifier CUSTOM_ID = id("custom_message");
     public static final Identifier ENERGY_SYNC = id("energy_sync");
+    public static final Identifier FLUID_SYNC = id("fluid_sync");
 
     public static void registerC2SPackets() {
         ServerPlayNetworking.registerGlobalReceiver(CUSTOM_ID, CustomC2SPacket::receive);

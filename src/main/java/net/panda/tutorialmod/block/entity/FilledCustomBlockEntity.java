@@ -4,6 +4,9 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,6 +16,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.PropertyDelegate;
@@ -29,8 +33,10 @@ import net.panda.tutorialmod.item.ModItems;
 import net.panda.tutorialmod.networking.ModMessages;
 import net.panda.tutorialmod.recipe.CustomRecipe;
 import net.panda.tutorialmod.screen.FilledCustomBlockScreenHandler;
+import net.panda.tutorialmod.util.FluidStack;
 import org.jetbrains.annotations.Nullable;
 import team.reborn.energy.api.base.SimpleEnergyStorage;
+import techreborn.init.ModFluids;
 
 import java.util.Optional;
 
@@ -44,13 +50,27 @@ public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScre
             markDirty();
 
             if (!world.isClient()) {
-                PacketByteBuf data = PacketByteBufs.create();
-                data.writeLong(amount);
-                data.writeBlockPos(getPos());
+                sendEnergyPacket();
+            }
+        }
+    };
 
-                for (ServerPlayerEntity player : PlayerLookup.tracking((ServerWorld) world, getPos())) {
-                    ServerPlayNetworking.send(player, ModMessages.ENERGY_SYNC, data);
-                }
+    public final SingleVariantStorage<FluidVariant> fluidStorage = new SingleVariantStorage<FluidVariant>() {
+        @Override
+        protected FluidVariant getBlankVariant() {
+            return FluidVariant.blank();
+        }
+
+        @Override
+        protected long getCapacity(FluidVariant variant) {
+            return FluidStack.convertDropletsToMb(FluidConstants.BUCKET) * 20; //20k mb
+        }
+
+        @Override
+        protected void onFinalCommit() {
+            markDirty();
+            if (!world.isClient()) {
+                sendFluidPacket();
             }
         }
     };
@@ -90,6 +110,11 @@ public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScre
         this.energyStorage.amount = energyLevel;
     }
 
+    public void setFluidLevel(FluidVariant fluidVariant, long fluidLevel) {
+        this.fluidStorage.variant = fluidVariant;
+        this.fluidStorage.amount = fluidLevel;
+    }
+
     @Override
     public Text getDisplayName() {
         return Text.literal("Custom Block");
@@ -98,6 +123,9 @@ public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScre
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+        sendEnergyPacket();
+        sendFluidPacket();
+
         return new FilledCustomBlockScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
     }
 
@@ -117,6 +145,8 @@ public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScre
         Inventories.writeNbt(nbt, inventory);
         nbt.putInt("filled_custom_block.progress", progress);
         nbt.putLong("filled_custom_block.energy", energyStorage.amount);
+        nbt.put("filled_custom_block.variant", fluidStorage.variant.toNbt());
+        nbt.putLong("filled_custom_block.fluid", fluidStorage.amount);
     }
 
     @Override
@@ -125,6 +155,8 @@ public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScre
         super.readNbt(nbt);
         progress = nbt.getInt("filled_custom_block.progress");
         energyStorage.amount = nbt.getLong("filled_custom_block.energy");
+        fluidStorage.variant = FluidVariant.fromNbt((NbtCompound) nbt.get("filled_custom_block.variant"));
+        fluidStorage.amount = nbt.getLong("filled_custom_block.fluid");
     }
 
     private void resetProgress() {
@@ -191,18 +223,36 @@ public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScre
     public static void tick(World world, BlockPos blockPos, BlockState blockState, FilledCustomBlockEntity entity) {
         if (world.isClient()) return;
 
-        if (hasRecipe(entity) && hasEnoughEnergy(entity)) {
+        if (hasRecipe(entity) && hasEnoughEnergy(entity) && hasEnoughFluid(entity)) {
             entity.progress++;
             extractEnergy(entity);
             markDirty(world, blockPos, blockState);
             if (entity.progress >= entity.maxProgress) {
                 craftItem(entity);
+                extractFluid(entity);
             }
         } else {
             entity.resetProgress();
             markDirty(world, blockPos, blockState);
         }
+
+        if (hasFluidSourceInSlot(entity)) {
+            transferFluidToFluidStorage(entity);
+        }
     }
+
+    private static void transferFluidToFluidStorage(FilledCustomBlockEntity entity) {
+        try (Transaction transaction = Transaction.openOuter()) {
+            entity.fluidStorage.insert(FluidVariant.of(ModFluids.WOLFRAMIUM.getFluid()), FluidStack.convertDropletsToMb(FluidConstants.BUCKET), transaction);
+            transaction.commit();
+            entity.setStack(0, new ItemStack(Items.BUCKET));
+        }
+    }
+
+    private static boolean hasFluidSourceInSlot(FilledCustomBlockEntity entity) {
+        return entity.getStack(0).getItem() == ModFluids.WOLFRAMIUM.getBucket();
+    }
+
 
     private static void extractEnergy(FilledCustomBlockEntity entity) {
         try (Transaction transaction = Transaction.openOuter()) {
@@ -211,10 +261,20 @@ public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScre
         }
     }
 
+    private static void extractFluid(FilledCustomBlockEntity entity) {
+        try (Transaction transaction = Transaction.openOuter()) {
+            entity.fluidStorage.extract(FluidVariant.of(ModFluids.WOLFRAMIUM.getFluid()), 500, transaction);
+            transaction.commit();
+        }
+    }
+
     private static boolean hasEnoughEnergy(FilledCustomBlockEntity entity) {
         return entity.energyStorage.amount >= 32;
     }
 
+    private static boolean hasEnoughFluid(FilledCustomBlockEntity entity) {
+        return entity.fluidStorage.amount >= 500; // mB amount
+    }
     private static boolean hasEnergyItem(FilledCustomBlockEntity entity) {
         return entity.getStack(0).getItem() == ModItems.FILLED_CUSTOM_ITEM;
     }
@@ -258,5 +318,26 @@ public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScre
 
     private static boolean canInsertAmountIntoOutputSlot(SimpleInventory simpleInventory) {
         return simpleInventory.getStack(2).getMaxCount() > simpleInventory.getStack(2).getCount();
+    }
+
+    private void sendEnergyPacket() {
+        PacketByteBuf data = PacketByteBufs.create();
+        data.writeLong(energyStorage.amount);
+        data.writeBlockPos(getPos());
+
+        for (ServerPlayerEntity player : PlayerLookup.tracking((ServerWorld) world, getPos())) {
+            ServerPlayNetworking.send(player, ModMessages.ENERGY_SYNC, data);
+        }
+    }
+
+    private void sendFluidPacket() {
+        PacketByteBuf data = PacketByteBufs.create();
+        fluidStorage.variant.toPacket(data);
+        data.writeLong(fluidStorage.amount);
+        data.writeBlockPos(getPos());
+
+        for (ServerPlayerEntity player : PlayerLookup.tracking((ServerWorld) world, getPos())) {
+            ServerPlayNetworking.send(player, ModMessages.FLUID_SYNC, data);
+        }
     }
 }

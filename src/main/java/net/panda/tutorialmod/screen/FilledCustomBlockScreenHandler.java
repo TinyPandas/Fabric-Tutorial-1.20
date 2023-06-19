@@ -11,12 +11,14 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.panda.tutorialmod.block.entity.FilledCustomBlockEntity;
+import net.panda.tutorialmod.util.FluidStack;
 
 public class FilledCustomBlockScreenHandler extends ScreenHandler {
 
     private final Inventory inventory;
     private final PropertyDelegate propertyDelegate;
     public final FilledCustomBlockEntity blockEntity;
+    public FluidStack fluidStack;
 
     public FilledCustomBlockScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory, playerInventory.player.getWorld().getBlockEntity(buf.readBlockPos()),
@@ -30,6 +32,7 @@ public class FilledCustomBlockScreenHandler extends ScreenHandler {
         inventory.onOpen(playerInventory.player);
         this.propertyDelegate = delegate;
         this.blockEntity = (FilledCustomBlockEntity) entity;
+        this.fluidStack = new FluidStack(blockEntity.fluidStorage.variant, blockEntity.fluidStorage.amount);
 
         this.addSlot(new Slot(inventory, 0, 12, 15));
         this.addSlot(new Slot(inventory, 1, 86, 15));
@@ -39,6 +42,10 @@ public class FilledCustomBlockScreenHandler extends ScreenHandler {
         addPlayerHotbar(playerInventory);
 
         addProperties(delegate);
+    }
+
+    public void setFluid(FluidStack stack) {
+        fluidStack = stack;
     }
 
     public boolean isCrafting() {

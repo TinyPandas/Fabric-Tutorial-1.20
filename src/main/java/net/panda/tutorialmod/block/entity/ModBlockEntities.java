@@ -1,6 +1,7 @@
 package net.panda.tutorialmod.block.entity;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -17,5 +18,6 @@ public class ModBlockEntities {
                 FabricBlockEntityTypeBuilder.create(FilledCustomBlockEntity::new, ModBlocks.FILLED_CUSTOM_BLOCK).build(null));
 
         EnergyStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.energyStorage, FILLED_CUSTOM_BLOCK);
+        FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> blockEntity.fluidStorage, FILLED_CUSTOM_BLOCK);
     }
 }

@@ -14,5 +14,8 @@
   "tooltip.tutorialmod.virus_block": "Ew, gross!",
 
   "key.category.tutorialmod.custom": "Custom Keybinds",
-  "key.tutorialmod.custom": "Spawn Cow Key"
+  "key.tutorialmod.custom": "Spawn Cow Key",
+
+  "tutorialmod.tooltip.liquid.amount.with.capacity": "%s / %s mB",
+  "tutorialmod.tooltip.liquid.amount": "%s mB"
 }
