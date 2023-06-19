@@ -7,12 +7,18 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.panda.tutorialmod.screen.renderer.EnergyInfoArea;
+import net.panda.tutorialmod.util.MouseUtil;
+
+import java.util.Optional;
 
 import static net.panda.tutorialmod.Util.id;
 
 public class FilledCustomBlockScreen extends HandledScreen<FilledCustomBlockScreenHandler> {
 
     private static final Identifier TEXTURE = id("textures/gui/filled_custom_block_gui.png");
+
+    private EnergyInfoArea energyInfoArea;
 
     public FilledCustomBlockScreen(FilledCustomBlockScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -22,6 +28,20 @@ public class FilledCustomBlockScreen extends HandledScreen<FilledCustomBlockScre
     protected void init() {
         super.init();
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
+        assignEnergyInfoArea();
+    }
+
+    private void assignEnergyInfoArea() {
+        energyInfoArea = new EnergyInfoArea(((width - backgroundWidth) / 2) + 156,
+                ((height - backgroundHeight) / 2) + 13, handler.blockEntity.energyStorage);
+    }
+
+    @Override
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+        int x = (width - backgroundWidth) / 2;
+        int y = (height - backgroundHeight) / 2;
+
+        renderEnergyAreaTooltips(context, mouseX, mouseY, x, y);
     }
 
     @Override
@@ -33,6 +53,17 @@ public class FilledCustomBlockScreen extends HandledScreen<FilledCustomBlockScre
         int y = (height - backgroundHeight) / 2;
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
         renderProgressArrow(context, x, y);
+        energyInfoArea.draw(context);
+    }
+
+    private void renderEnergyAreaTooltips(DrawContext context, int mouseX, int mouseY, int x, int y) {
+        if (isMouseAboveArea(mouseX, mouseY, x, y, 156, 13, 8, 64)) {
+            context.drawTooltip(textRenderer, energyInfoArea.getTooltips(), Optional.empty(), mouseX - x, mouseY - y);
+        }
+    }
+
+    private boolean isMouseAboveArea(int mouseX, int mouseY, int x, int y, int offsetX, int offsetY, int width, int height) {
+        return MouseUtil.isMouseOver(mouseX, mouseY, x + offsetX, y + offsetY, width, height);
     }
 
     private void renderProgressArrow(DrawContext context, int x, int y) {

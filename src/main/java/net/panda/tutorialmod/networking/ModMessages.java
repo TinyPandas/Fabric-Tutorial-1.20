@@ -9,12 +9,9 @@ import static net.panda.tutorialmod.Util.id;
 public class ModMessages {
 
     public static final Identifier CUSTOM_ID = id("custom_message");
+    public static final Identifier ENERGY_SYNC = id("energy_sync");
 
     public static void registerC2SPackets() {
         ServerPlayNetworking.registerGlobalReceiver(CUSTOM_ID, CustomC2SPacket::receive);
-    }
-
-    public static void registerS2CPackets() {
-
     }
 }

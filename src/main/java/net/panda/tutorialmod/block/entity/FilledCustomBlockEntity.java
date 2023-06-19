@@ -1,5 +1,10 @@
 package net.panda.tutorialmod.block.entity;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,24 +14,46 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.panda.tutorialmod.block.custom.FilledCustomBlock;
+import net.panda.tutorialmod.item.ModItems;
+import net.panda.tutorialmod.networking.ModMessages;
 import net.panda.tutorialmod.recipe.CustomRecipe;
 import net.panda.tutorialmod.screen.FilledCustomBlockScreenHandler;
 import org.jetbrains.annotations.Nullable;
+import team.reborn.energy.api.base.SimpleEnergyStorage;
 
 import java.util.Optional;
 
-public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
+public class FilledCustomBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory, ImplementedInventory {
 
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
+
+    public final SimpleEnergyStorage energyStorage = new SimpleEnergyStorage(30000, 32, 32) {
+        @Override
+        protected void onFinalCommit() {
+            markDirty();
+
+            if (!world.isClient()) {
+                PacketByteBuf data = PacketByteBufs.create();
+                data.writeLong(amount);
+                data.writeBlockPos(getPos());
+
+                for (ServerPlayerEntity player : PlayerLookup.tracking((ServerWorld) world, getPos())) {
+                    ServerPlayNetworking.send(player, ModMessages.ENERGY_SYNC, data);
+                }
+            }
+        }
+    };
 
     protected final PropertyDelegate propertyDelegate;
     private int progress = 0;
@@ -59,6 +86,10 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
         };
     }
 
+    public void setEnergyLevel(long energyLevel) {
+        this.energyStorage.amount = energyLevel;
+    }
+
     @Override
     public Text getDisplayName() {
         return Text.literal("Custom Block");
@@ -71,6 +102,11 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
     }
 
     @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeBlockPos(this.pos);
+    }
+
+    @Override
     public DefaultedList<ItemStack> getItems() {
         return this.inventory;
     }
@@ -80,6 +116,7 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, inventory);
         nbt.putInt("filled_custom_block.progress", progress);
+        nbt.putLong("filled_custom_block.energy", energyStorage.amount);
     }
 
     @Override
@@ -87,6 +124,7 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
         Inventories.readNbt(nbt, inventory);
         super.readNbt(nbt);
         progress = nbt.getInt("filled_custom_block.progress");
+        energyStorage.amount = nbt.getLong("filled_custom_block.energy");
     }
 
     private void resetProgress() {
@@ -153,8 +191,9 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
     public static void tick(World world, BlockPos blockPos, BlockState blockState, FilledCustomBlockEntity entity) {
         if (world.isClient()) return;
 
-        if (hasRecipe(entity)) {
+        if (hasRecipe(entity) && hasEnoughEnergy(entity)) {
             entity.progress++;
+            extractEnergy(entity);
             markDirty(world, blockPos, blockState);
             if (entity.progress >= entity.maxProgress) {
                 craftItem(entity);
@@ -163,6 +202,21 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
             entity.resetProgress();
             markDirty(world, blockPos, blockState);
         }
+    }
+
+    private static void extractEnergy(FilledCustomBlockEntity entity) {
+        try (Transaction transaction = Transaction.openOuter()) {
+            entity.energyStorage.extract(32, transaction);
+            transaction.commit();
+        }
+    }
+
+    private static boolean hasEnoughEnergy(FilledCustomBlockEntity entity) {
+        return entity.energyStorage.amount >= 32;
+    }
+
+    private static boolean hasEnergyItem(FilledCustomBlockEntity entity) {
+        return entity.getStack(0).getItem() == ModItems.FILLED_CUSTOM_ITEM;
     }
 
     private static void craftItem(FilledCustomBlockEntity entity) {
