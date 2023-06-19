@@ -15,7 +15,9 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.panda.tutorialmod.block.custom.FilledCustomBlock;
 import net.panda.tutorialmod.recipe.CustomRecipe;
 import net.panda.tutorialmod.screen.FilledCustomBlockScreenHandler;
 import org.jetbrains.annotations.Nullable;
@@ -89,6 +91,63 @@ public class FilledCustomBlockEntity extends BlockEntity implements NamedScreenH
 
     private void resetProgress() {
         this.progress = 0;
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction side) {
+        if (side == null) {
+            return false;
+        }
+        if (this.getWorld() == null) {
+            return false;
+        }
+        if (side == Direction.UP || side == Direction.DOWN) {
+            return false;
+        }
+
+        Direction localDir = this.getWorld().getBlockState(this.pos).get(FilledCustomBlock.FACING);
+
+        // Top insert 1
+        // Right insert 1
+        // Left insert 0
+        Direction oppositeSide = side.getOpposite();
+        Direction yClockwise = side.rotateYClockwise();
+        Direction yCounter = side.rotateYCounterclockwise();
+
+        return switch(localDir) {
+            default -> oppositeSide == Direction.NORTH && slot == 1 || oppositeSide == Direction.EAST && slot == 1 || oppositeSide == Direction.WEST && slot == 0;
+            case EAST -> yClockwise == Direction.NORTH && slot == 1 || yClockwise == Direction.EAST && slot == 1 || yClockwise == Direction.WEST && slot == 0;
+            case SOUTH -> side == Direction.NORTH && slot == 1 || side == Direction.EAST && slot == 1 || side == Direction.WEST && slot == 0;
+            case WEST -> yCounter == Direction.NORTH && slot == 1 || yCounter == Direction.EAST && slot == 1 || yCounter == Direction.WEST && slot == 0;
+        };
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction side) {
+        if (this.getWorld() == null) {
+            return false;
+        }
+        if (side == Direction.UP) {
+            return false;
+        }
+        if (side == Direction.DOWN) {
+            return slot == 2;
+        }
+
+        Direction localDir = this.getWorld().getBlockState(this.pos).get(FilledCustomBlock.FACING);
+
+        //bottom extract 2
+        //right extract 2
+        Direction oppositeSide = side.getOpposite();
+        Direction yClockwise = side.rotateYClockwise();
+        Direction yCounter = side.rotateYCounterclockwise();
+
+        return switch(localDir) {
+            default -> oppositeSide == Direction.SOUTH && slot == 2 || oppositeSide == Direction.EAST && slot == 2;
+            case EAST -> yClockwise == Direction.SOUTH && slot == 2 || yClockwise == Direction.EAST && slot == 2;
+            case SOUTH -> side == Direction.SOUTH && slot == 2 || side == Direction.EAST && slot == 2;
+            case WEST -> yCounter == Direction.SOUTH && slot == 2 || yCounter == Direction.EAST && slot == 2;
+        };
     }
 
     public static void tick(World world, BlockPos blockPos, BlockState blockState, FilledCustomBlockEntity entity) {
