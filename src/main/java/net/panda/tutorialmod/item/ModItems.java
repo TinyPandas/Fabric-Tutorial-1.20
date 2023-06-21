@@ -26,6 +26,14 @@ public class ModItems {
             new CustomWandItem(new FabricItemSettings().maxCount(1)),
             ModItemGroup.registryKey());
 
+    public static final Item CUSTOM_BUCKET = registerItem("custom_bucket_item",
+            new CustomBucket(4996656, new Item.Settings()),
+            ModItemGroup.registryKey());
+
+    public static final Item CUSTOM_BUCKET_2 = registerItem("custom_bucket_item_2",
+            new CustomBucket(589707, new Item.Settings()),
+            ModItemGroup.registryKey());
+
     private static Item registerItem(String name, Item item, RegistryKey<ItemGroup> itemGroup) {
         ItemGroupEvents.modifyEntriesEvent(itemGroup).register(content -> content.add(new ItemStack(item)));
         return Registry.register(Registries.ITEM, id(name), item);

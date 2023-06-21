@@ -15,6 +15,9 @@
 	"icon": "assets/tutorialmod/icon.png",
 	"environment": "*",
 	"entrypoints": {
+		"fabric-datagen": [
+			"net.panda.tutorialmod.datagen.CustomDataGeneratorEntrypoint"
+		],
 		"main": [
 			"net.panda.tutorialmod.ExampleMod"
 		],
