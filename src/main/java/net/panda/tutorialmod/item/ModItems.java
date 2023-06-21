@@ -34,6 +34,10 @@ public class ModItems {
             new CustomBucket(589707, new Item.Settings()),
             ModItemGroup.registryKey());
 
+    public static final Item CUSTOM_BATTERY = registerItem("custom_battery",
+            new CustomBattery(new FabricItemSettings()),
+            ModItemGroup.registryKey());
+
     private static Item registerItem(String name, Item item, RegistryKey<ItemGroup> itemGroup) {
         ItemGroupEvents.modifyEntriesEvent(itemGroup).register(content -> content.add(new ItemStack(item)));
         return Registry.register(Registries.ITEM, id(name), item);

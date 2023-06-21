@@ -2,6 +2,7 @@
   "item.tutorialmod.custom_item": "Custom Item",
   "item.tutorialmod.filled_custom_item": "Filled Custom Item",
   "item.tutorialmod.custom_wand_item": "Custom Wand",
+  "item.tutorialmod.custom_battery": "[LOW] Custom Battery",
 
   "block.tutorialmod.custom_block": "Custom Block",
   "block.tutorialmod.filled_custom_block": "Filled Custom Block",
@@ -17,5 +18,5 @@
   "key.tutorialmod.custom": "Spawn Cow Key",
 
   "tutorialmod.tooltip.liquid.amount.with.capacity": "%s / %s mB",
-  "tutorialmod.tooltip.liquid.amount": "%s mB"
+  "tutorialmod.tooltip.liquid.amount": "%s mB",
 }

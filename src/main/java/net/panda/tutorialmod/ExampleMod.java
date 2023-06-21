@@ -31,7 +31,5 @@ public class ExampleMod implements ModInitializer {
 		ModScreenHandlers.registerAllScreenHandlers();
 
 		ModRecipes.registerRecipes();
-
-
 	}
 }
