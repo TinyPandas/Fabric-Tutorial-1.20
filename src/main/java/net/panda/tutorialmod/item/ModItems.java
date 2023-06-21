@@ -8,8 +8,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.Rarity;
 import net.panda.tutorialmod.ExampleMod;
 import net.panda.tutorialmod.item.custom.CustomWandItem;
+import reborncore.common.powerSystem.RcEnergyTier;
 
 import static net.panda.tutorialmod.Util.id;
 
@@ -35,7 +37,11 @@ public class ModItems {
             ModItemGroup.registryKey());
 
     public static final Item CUSTOM_BATTERY = registerItem("custom_battery",
-            new CustomBattery(new FabricItemSettings()),
+            new CustomBattery(new FabricItemSettings().maxCount(1)),
+            ModItemGroup.registryKey());
+
+    public static final Item CUSTOM_BOW_TIER_LOW = registerItem("custom_bow_low",
+            new CustomPoweredBow(new FabricItemSettings().maxCount(1).rarity(Rarity.UNCOMMON), 2500, RcEnergyTier.LOW, 25),
             ModItemGroup.registryKey());
 
     private static Item registerItem(String name, Item item, RegistryKey<ItemGroup> itemGroup) {
