@@ -1,6 +1,0 @@
-{
-  "parent": "tutorialmod:item/custom_bow_low",
-  "textures": {
-    "layer0": "tutorialmod:item/custom_bow_low_pulling_2"
-  }
-}

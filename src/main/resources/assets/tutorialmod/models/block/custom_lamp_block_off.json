@@ -1,6 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "tutorialmod:block/custom_lamp_block_off"
-  }
-}
