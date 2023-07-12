@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "tutorial-example",
+  "version": "1.0.0",
+  "name": "Tutorial Example",
+  "description": "This is Tutorial Example, a submod of Tutorial Mod.",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.panda.tutorialmod.ExampleMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "minecraft": "~1.20",
+    "java": ">=17",
+    "fabric-api": "*",
+    "tutorialmod": "1.0.0",
+    "tutorial-core": "1.0.0"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

@@ -1,9 +1,9 @@
 {
 	"schemaVersion": 1,
 	"id": "tutorialmod",
-	"version": "${version}",
+	"version": "1.0.0",
 	"name": "TutorialMod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "This is Tutorial Mod.",
 	"authors": [
 		"Me!"
 	],
@@ -19,10 +19,10 @@
 			"net.panda.tutorialmod.datagen.CustomDataGeneratorEntrypoint"
 		],
 		"main": [
-			"net.panda.tutorialmod.ExampleMod"
+			"net.panda.tutorialmod.TutorialMod"
 		],
 		"client": [
-			"net.panda.tutorialmod.ExampleModClient"
+			"net.panda.tutorialmod.TutorialModClient"
 		]
 	},
 	"mixins": [
@@ -36,7 +36,8 @@
 		"fabricloader": ">=0.14.21",
 		"minecraft": "~1.20",
 		"java": ">=17",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"tutorial-core": "1.0.0"
 	},
 	"suggests": {
 		"another-mod": "*"

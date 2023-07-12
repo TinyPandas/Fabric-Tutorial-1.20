@@ -12,7 +12,7 @@ import net.panda.tutorialmod.networking.ClientModMessages;
 import net.panda.tutorialmod.screen.FilledCustomBlockScreen;
 import net.panda.tutorialmod.screen.ModScreenHandlers;
 
-public class ExampleModClient implements ClientModInitializer {
+public class TutorialModClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		KeyInputHandler.register();

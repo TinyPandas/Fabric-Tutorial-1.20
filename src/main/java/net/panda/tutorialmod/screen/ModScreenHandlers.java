@@ -6,7 +6,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
-import static net.panda.tutorialmod.ExampleMod.MODID;
+import static net.panda.tutorialmod.TutorialMod.MODID;
 
 public class ModScreenHandlers {
 

@@ -13,7 +13,7 @@ import net.panda.tutorialmod.world.feature.ModConfiguredFeatures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExampleMod implements ModInitializer {
+public class TutorialMod implements ModInitializer {
 	public static final String MODID = "tutorialmod";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 

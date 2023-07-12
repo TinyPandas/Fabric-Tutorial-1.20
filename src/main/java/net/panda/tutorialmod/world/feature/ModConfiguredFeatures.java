@@ -7,7 +7,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.PlacedFeature;
-import net.panda.tutorialmod.ExampleMod;
+import net.panda.tutorialmod.TutorialMod;
 
 import static net.panda.tutorialmod.Util.id;
 
@@ -17,7 +17,7 @@ public class ModConfiguredFeatures {
     public static final RegistryKey<PlacedFeature> OVERWORLD_VIRUS_PLACED_KEY = RegistryKey.of(RegistryKeys.PLACED_FEATURE, OVERWORLD_VIRUS_BLOCK_ID);
 
     public static void registerConfiguredFeatures() {
-        ExampleMod.LOGGER.debug("Registering ModConfiguredFeatures " + ExampleMod.MODID);
+        TutorialMod.LOGGER.debug("Registering ModConfiguredFeatures " + TutorialMod.MODID);
         BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.TOP_LAYER_MODIFICATION, OVERWORLD_VIRUS_PLACED_KEY);
     }
 }

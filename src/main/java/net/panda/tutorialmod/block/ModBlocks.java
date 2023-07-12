@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.panda.tutorialmod.ExampleMod;
+import net.panda.tutorialmod.TutorialMod;
 import net.panda.tutorialmod.block.custom.CustomLampBlock;
 import net.panda.tutorialmod.block.custom.FilledCustomBlock;
 import net.panda.tutorialmod.block.custom.VirusBlock;
@@ -49,6 +49,6 @@ public class ModBlocks {
     }
 
     public static void registerModBlocks() {
-        ExampleMod.LOGGER.debug("Registering ModBlocks for " + ExampleMod.MODID);
+        TutorialMod.LOGGER.debug("Registering ModBlocks for " + TutorialMod.MODID);
     }
 }

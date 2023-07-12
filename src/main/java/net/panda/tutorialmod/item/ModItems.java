@@ -9,7 +9,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Rarity;
-import net.panda.tutorialmod.ExampleMod;
+import net.panda.tutorialmod.TutorialMod;
 import net.panda.tutorialmod.item.custom.CustomWandItem;
 import reborncore.common.powerSystem.RcEnergyTier;
 
@@ -50,6 +50,6 @@ public class ModItems {
     }
 
     public static void registerModItems() {
-        ExampleMod.LOGGER.debug("Registering Mod Items for " + ExampleMod.MODID);
+        TutorialMod.LOGGER.debug("Registering Mod Items for " + TutorialMod.MODID);
     }
 }
