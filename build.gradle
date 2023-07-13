@@ -9,12 +9,6 @@ allprojects {
 	version = "1.0.0"
 
 	repositories {
-		// Add repositories to retrieve artifacts from in here.
-		// You should only use this when depending on other mods because
-		// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-		// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-		// for more information about repositories.
-
 		maven {
 			url "https://cursemaven.com"
 			content {
@@ -49,6 +43,13 @@ allprojects {
 		modApi("com.terraformersmc:modmenu:7.1.0") {
 			exclude(group: "net.fabricmc.fabric-api")
 		}
+
+		modApi('teamreborn:energy:3.0.0') {
+			exclude(group: "net.fabricmc.fabric-api")
+		}
+
+		modImplementation ("curse.maven:reborncore-237903:4582416")
+		modImplementation ("curse.maven:techreborn-233564:4582415")
 	}
 
 	jar {
@@ -78,13 +79,7 @@ loom {
 }
 
 dependencies {
-	afterEvaluate {
-		subprojects.each {
-			include project("${it.name}:")
-		}
-	}
-
-	implementation project(path: ":core", configuration: "namedElements")
+	include project(path: ":core", configuration: "namedElements")
 }
 
 base {

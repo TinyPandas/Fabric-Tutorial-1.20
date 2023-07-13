@@ -2,11 +2,4 @@ base {
     archivesName = "core"
 }
 
-dependencies {
-    include modApi('teamreborn:energy:3.0.0') {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-
-    modImplementation ("curse.maven:reborncore-237903:4582416")
-    modImplementation ("curse.maven:techreborn-233564:4582415")
-}
+dependencies {}

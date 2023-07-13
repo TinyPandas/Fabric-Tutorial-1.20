@@ -4,6 +4,7 @@ base {
 
 dependencies {
     implementation project(path: ":core", configuration: "namedElements")
+    implementation project(path: ":", configuration: "namedElements")
 }
 
 loom {
